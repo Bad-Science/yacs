@@ -13,7 +13,7 @@ Yacs.views.schedule = function (data) {
   var crnListElement = document.querySelector('#crnList');
   var schedule = new Schedule(scheduleContainer);
   var scheduleIndex = 0;
-
+  var courseNumbers = [];
 
   // this function will be deprecated when backend is updated to use minutes-since-midnight format
   // see issue #102
@@ -22,15 +22,17 @@ Yacs.views.schedule = function (data) {
     return Math.floor(int / 100) * 60 + int % 100;
   }
 
-  var transformSchedule = function (schedule) {
+  var prepareSchedule = function (schedule) {
     var events = [];
     var crns = [];
 
     schedule.sections.forEach(function (section) {
-      var color = crns.indexOf(section.crn);
+      crns.push(section.crn)
+      
+      var color = courseNumbers.indexOf(section.course_number);
       if (color === -1) {
-        crns.push(section.crn);
-        color = crns.length - 1;
+        courseNumbers.push(section.course_number);
+        color = courseNumbers.length - 1;
       }
 
       section.periods.forEach(function (period) {
@@ -43,14 +45,13 @@ Yacs.views.schedule = function (data) {
         });
       });
     });
-    return { events: events, crns: crns };
+    schedule.render = { events: events, crns: crns };
   };
 
   var showSchedule = function (index) {
-    var scheduleData = transformSchedule(data.schedules[index]);
-    schedule.setEvents(scheduleData.events)
+    schedule.setEvents(data.schedules[index].render.events)
     scheduleNumElement.textContent = index + 1;
-    crnListElement.textContent = 'CRNs: ' + scheduleData.crns.join(', ');
+    crnListElement.textContent = 'CRNs: ' + data.schedules[index].render.crns.join(', ');
   }
 
   if(data.schedules.length == 0) {
@@ -65,6 +66,13 @@ Yacs.views.schedule = function (data) {
   Yacs.on('click', rightSwitchElement, function () {
     scheduleIndex = (++scheduleIndex < data.schedules.length ? scheduleIndex : 0);
     showSchedule(scheduleIndex);
+  });
+
+  data.schedules.forEach(function (schedule, index) {
+    prepareSchedule(schedule);
+    var schedulePreviewElement = document.querySelector('schedule-preview[data-index="' + index + '"]');
+    var schedulePreview = new Schedule(schedulePreviewElement, { preview: true });
+    schedulePreview.setEvents(schedule.render.events);
   });
 
   showSchedule(scheduleIndex);

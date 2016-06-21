@@ -7,5 +7,10 @@
     </div>
     <div id="crnList"> </div>
   </div>
-  <div id="scheduleContainer" />
+  <div id="schedulesList">
+    {{#schedules}}
+      <schedule-preview data-index="{{@index}}"></schedule-preview>
+    {{/schedules}}
+  </div>
+  <div id="scheduleContainer"/>
 </div>

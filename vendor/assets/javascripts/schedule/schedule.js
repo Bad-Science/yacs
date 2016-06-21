@@ -8,24 +8,29 @@ window.Schedule = function (scheduleContainer, options) {
   // var SELECTED_COLORS   = ['#ff3575', '#19b5f2', '#ffcf56', '#59dc68', '#d57fdd', '#ac8f71', '#ff9c46'];
   // /*                         PINK       BLUE       YELLOW     GREEN      PURPLE     BROWN      ORANGE */
 
-  var NUM_COLORS        = 6;
-  var TEXT_COLORS       = ['#720', '#722', '#661', '#227', '#166', '#616'];
-  var BACKGROUND_COLORS = ['#fdc', '#edd', '#eed', '#dde', '#dee', '#ede'];
-  var BORDER_COLORS     = ['#b62', '#b44', '#994', '#448', '#499', '#949'];
+  self.NUM_COLORS        = 6;
+  self.TEXT_COLORS       = ['#720', '#722', '#661', '#227', '#166', '#616'];
+  self.BACKGROUND_COLORS = ['#fdc', '#edd', '#eed', '#dde', '#dee', '#ede'];
+  self.BORDER_COLORS     = ['#b62', '#b44', '#994', '#448', '#499', '#949'];
 
-  options = options || {};
-  options.timeBegin = options.timeBegin || 8 * 60;
-  options.timeSpan  = options.timeSpan  || 12 * 60;
-  options.dayBegin  = options.dayBegin  || 1;
-  options.daySpan   = options.daySpan   || 5;
-  options.gridSize  = options.gridSize  || 60;
+  options            = options            || {};
+  options.timeBegin  = options.timeBegin  || 8 * 60;
+  options.timeSpan   = options.timeSpan   || 12 * 60;
+  options.dayBegin   = options.dayBegin   || 1;
+  options.daySpan    = options.daySpan    || 5;
+  options.gridSize   = options.gridSize   || 60;
+  options.preview    = options.preview    || false;
 
   var scheduleElement = document.createElement('schedule-view');
   var legendElement   = document.createElement('schedule-legend');
   var gridElement     = document.createElement('schedule-grid');
+  var eventsElement   = document.createElement('schedule-events');
 
-  scheduleElement.appendChild(legendElement);
-  scheduleElement.appendChild(gridElement);
+  scheduleElement.appendChild(eventsElement);
+  if (!options.preview) {
+    scheduleElement.appendChild(legendElement);
+    scheduleElement.appendChild(gridElement);
+  }
   scheduleContainer.appendChild(scheduleElement);
 
   var daySize = function (n) {
@@ -40,24 +45,24 @@ window.Schedule = function (scheduleContainer, options) {
     var eventText       = document.createElement('event-text');
     var eventElement    = document.createElement('schedule-event');
     var eventBackground = document.createElement('event-background');
-    var colorIndex      = event.colorNum % NUM_COLORS;
+    var colorIndex      = event.colorNum % self.NUM_COLORS;
 
     eventText.textContent                 = event.title;
-    eventText.style.color                 = TEXT_COLORS[colorIndex];
+    eventText.style.color                 = self.TEXT_COLORS[colorIndex];
     eventElement.style.top                = timeSize(event.start - options.timeBegin);
     eventElement.style.left               = daySize(event.day - options.dayBegin);
     eventElement.style.width              = 'calc(' + daySize(1) + ' - 6px)';
     eventElement.style.height             = 'calc(' + timeSize(event.end - event.start) + ' - 2px)';
-    eventElement.style.borderColor        = BORDER_COLORS[colorIndex];
-    eventBackground.style.backgroundColor = BACKGROUND_COLORS[colorIndex];
+    eventElement.style.borderColor        = self.BORDER_COLORS[colorIndex];
+    eventBackground.style.backgroundColor = self.BACKGROUND_COLORS[colorIndex];
 
     eventElement.appendChild(eventBackground);
-    eventElement.appendChild(eventText);
-    scheduleElement.appendChild(eventElement);
+    if (!options.preview) eventElement.appendChild(eventText);
+    eventsElement.appendChild(eventElement);
   };
 
   self.clearEvents = function () {
-    var events = scheduleElement.querySelectorAll('schedule-event');
+    var events = eventsElement.querySelectorAll('schedule-event');
     for (var e = 0; e < events.length; ++e)
       events[e].remove();
   };
@@ -100,6 +105,8 @@ window.Schedule = function (scheduleContainer, options) {
     }
   };
 
-  drawLegend();
-  drawGrid();
+  if (!options.preview) {
+    drawLegend();
+    drawGrid();
+  }
 };

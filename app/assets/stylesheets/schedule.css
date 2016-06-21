@@ -37,4 +37,32 @@
     height: 600px;
     margin-right: 15px;
     margin-top: 10px;
+    position: absolute;
+    width: calc(100% - 150px);
+    left: 120px;
+}
+
+#schedulesList {
+    width: 100px;
+    height: 600px;
+    position: absolute;
+    overflow: hidden;
+    overflow-y: scroll;
+    /*background-color: #efefef;*/
+}
+schedule-preview:nth-child(2n) {
+    background-color: #efefef;
+}
+schedule-preview:nth-child(2n+1) {
+    background-color: #f2d9d9
+}
+schedule-preview {
+    width: 100px;
+    height: 100px;
+    display: list-item;
+    list-style: none;
+}
+
+schedule-preview schedule-view {
+    margin: 0;
 }
