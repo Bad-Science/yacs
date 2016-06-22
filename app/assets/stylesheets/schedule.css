@@ -9,7 +9,7 @@
        please remove the vendor ones and replace with "user-select:none;" */
     -moz-user-select: none;
     -webkit-user-select: none;
-    -ms-user-select:none;
+    -ms-user-select: none;
 }
 #scheduleBar:after { 
    content: " ";
@@ -33,22 +33,26 @@
     cursor: default;
 }
 
-#scheduleContainer {
+#scheduleContent {
+    position: relative;
     height: 600px;
-    margin-right: 15px;
-    margin-top: 10px;
+    margin: 10px;
+    box-sizing: border-box;
+}
+
+#scheduleContainer {
+    height: 100%;
     position: absolute;
-    width: calc(100% - 150px);
-    left: 120px;
+    left: 100px;
+    right: 0;
 }
 
 #schedulesList {
     width: 100px;
-    height: 600px;
+    height: 100%;
     position: absolute;
     overflow: hidden;
     overflow-y: scroll;
-    /*background-color: #efefef;*/
 }
 schedule-preview:nth-child(2n) {
     background-color: #efefef;

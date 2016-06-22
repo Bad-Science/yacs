@@ -1,4 +1,4 @@
-<div id="scheduleContent">
+<div>
   <div id="scheduleBar">
     <div id="switch">
       <span id="leftSwitch" class="scheduleswitch">&#9664;</span>
@@ -7,10 +7,12 @@
     </div>
     <div id="crnList"> </div>
   </div>
-  <div id="schedulesList">
-    {{#schedules}}
-      <schedule-preview data-index="{{@index}}"></schedule-preview>
-    {{/schedules}}
+  <div id="scheduleContent">
+    <div id="schedulesList">
+      {{#schedules}}
+        <schedule-preview data-index="{{@index}}"></schedule-preview>
+      {{/schedules}}
+    </div>
+    <div id="scheduleContainer"/>
   </div>
-  <div id="scheduleContainer"/>
 </div>
