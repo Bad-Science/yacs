@@ -36,4 +36,8 @@ class Course < ActiveRecord::Base
   def credits
     min_credits == max_credits ? "#{min_credits}" : "#{min_credits}-#{max_credits}"
   end
+
+  def uid
+    "#{department_id}-#{number}"
+  end
 end
