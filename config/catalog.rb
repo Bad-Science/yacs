@@ -1,0 +1,1 @@
+Rails.application.config.catalog = Catalog::AbstractCatalog.new
