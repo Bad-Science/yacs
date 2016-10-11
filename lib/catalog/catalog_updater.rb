@@ -3,7 +3,7 @@ class Catalog::CatalogUpdater
 
   def full_update
     new_state = catalog.current
-    diff_set new_state
+    diff_courses_2 new_state
   end
 
   def quick_update
@@ -12,7 +12,7 @@ class Catalog::CatalogUpdater
 
   private
 
-  def diff_set courses
+  def diff_courses courses
     old_courses = {}
     new_courses = {}
     Courses.find_each do |course|
@@ -34,7 +34,25 @@ class Catalog::CatalogUpdater
         course.save!
       end
     end
+  end
 
+  def diff_courses_2 courses
+    Course.find_each do |course|
+      course.destroy unless new_courses[uid].present?
+    end
+
+    courses.each do |course|
+      current_course = Course.find_by course.attributes.pluck :department_id, :number
+      if current_course.present?
+        current_course.update_attributes course.attributes.compact
+      else
+        course.save!
+      end
+    end
+  end
+
+  def diff_sections sections
+    
   end
 
   def catalog
