@@ -2,29 +2,29 @@ class Catalog::CatalogUpdater
   class << self
 
   def full_update
-    new_state = catalog.current
-    diff_set Course, [:department_id, :number], catalog.current
-    new_state.each do |course|
-      diff_set Section, [:course_id, :name], course.sections
+    new_state = map_uids catalog.full
+    diff_set Course.all, %i(department_id number), new_state
+
+    Course.find_each do |course|
+      diff_set course.sections, %i(name), new_state[course.uid].sections
     end
   end
 
   def quick_update
     catalog.quick.each do |section|
-      update Section.find_by section.pluck :course_id, :name
+      update Section.find_by section.attributes.extract %i(name)
     end
   end
 
   private
 
-  def diff_set klass, uid_fields, records
-    new_courses = map_uids records
-    klass.find_each do |record|
-      record.destroy unless new_courses[uid].present?
+  def diff_set scope, uid_fields, records
+    scope.find_each do |record|
+      record.destroy unless records[record.uid].present?
     end
 
     records.each do |new_record|
-      old_record = klass.find_by new_record.attributes.pluck uid_fields
+      old_record = scope.find_by new_record.attributes.extract uid_fields
       old_record.present? ? update old_record, new_record : new_record.save!
     end
   end
@@ -33,7 +33,7 @@ class Catalog::CatalogUpdater
     old_record.update_attributes new_record.attributes.compact
   end
 
-  def map_uids records
+  def map_uids records, fields
     mapped_records = {}
     records.each do |record|
       mapped_records[record.uid] = record;
@@ -42,10 +42,22 @@ class Catalog::CatalogUpdater
   end
 
   def catalog
-    Rails.application.config.catalog
+    # Yacs::Catalog::Adapter
   end
 end
 
+
+class Section
+  def uid
+    name
+  end
+end
+
+class Course
+  def uid
+    "#{department_id}-#{number}"
+  end
+end
 
   # def diff_courses courses
   #   old_courses = {}
